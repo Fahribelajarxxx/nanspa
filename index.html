@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Media Interface</title>
+    <!-- Menggunakan font standar sans-serif -->
+    <style>
+        /* Variabel warna sederhana */
+        :root {
+            --bg-color: #FFFFFF;      /* Latar belakang putih sesuai permintaan */
+            --text-color: #333333;    /* Warna teks hitam/agak gelap */
+            --border-color: #DDDDDD;  /* Warna border abu-abu muda */
+            --primary-color: #007BFF; /* Biru standar untuk tombol */
+            --secondary-bg: #F9F9F9;  /* Abu-abu sangat muda untuk kartu */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .interface-container {
+            width: 100%;
+            max-width: 700px;
+        }
+
+        /* Header Sederhana */
+        .main-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .main-header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 5px;
+        }
+
+        .main-header p {
+            font-size: 14px;
+            color: #666666;
+        }
+
+        /* Grid Layout */
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 1fr; /* Satu kolom di mobile */
+            gap: 20px;
+        }
+
+        @media (min-width: 600px) {
+            .grid-layout {
+                grid-template-columns: 1fr 1fr; /* Dua kolom di desktop */
+            }
+        }
+
+        /* Kotak Modul / Card Sederhana */
+        .module {
+            background-color: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px; /* Sudut melengkung halus */
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .module-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .module-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-color);
+            text-transform: none; /* Tidak perlu uppercase semua */
+        }
+
+        .badge {
+            font-size: 10px;
+            background: #e0e0e0;
+            color: #555;
+            padding: 2px 6px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        /* Tombol Standar */
+        .btn-action {
+            width: 100%;
+            padding: 10px;
+            background-color: var(--primary-color);
+            border: none;
+            color: white;
+            font-size: 14px;
+            font-weight: normal;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            text-align: center;
+            display: block;
+        }
+
+        .btn-action:hover {
+            background-color: #0056b3; /* Biru lebih gelap saat hover */
+        }
+
+        .btn-action i {
+            margin-right: 5px;
+            vertical-align: middle;
+        }
+
+        /* Area Output Visual */
+        .visual-output {
+            margin-top: 15px;
+            width: 100%;
+            min-height: 150px;
+            border: 1px dashed var(--border-color);
+            background-color: #fff;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .visual-output img, .visual-output video {
+            max-width: 100%;
+            display: block;
+        }
+
+        /* Audio Player Default */
+        audio {
+            width: 100%;
+            margin-top: 15px;
+            /* Tidak ada filter, tampilan native browser */
+        }
+
+        .status-text {
+            font-size: 12px;
+            color: #888;
+            margin-top: 10px;
+            font-style: italic;
+        }
+
+        /* Ikon kecil di header */
+        .icon-small {
+            margin-right: 5px;
+            font-size: 16px;
+        }
+
+    </style>
+    <!-- Menggunakan RemixIcon untuk ikon, tapi gayanya tetap sederhana -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="interface-container">
+    <div class="main-header">
+        <h1>Media</h1>
+        <p>Unggah dan putar file media Anda</p>
+    </div>
+
+    <div class="grid-layout">
+        
+        <!-- Modul Visual -->
+        <div class="module">
+            <div class="module-header">
+                <span class="module-title"><i class="ri-image-line icon-small"></i> Gambar & Video</span>
+                <span class="badge">Media</span>
+            </div>
+            
+            <label class="btn-action">
+                <input type="file" style="display:none" accept="image/*,video/*" onchange="handleVisual(event)">
+                <i class="ri-upload-cloud-2-line"></i> Pilih File
+            </label>
+
+            <div id="v-preview" class="visual-output"></div>
+            <div id="v-status" class="status-text">Belum ada file dipilih.</div>
+        </div>
+
+        <!-- Modul Audio -->
+        <div class="module">
+            <div class="module-header">
+                <span class="module-title"><i class="ri-music-2-line icon-small"></i> Audio Player</span>
+                <span class="badge">Sound</span>
+            </div>
+            
+            <label class="btn-action">
+                <input type="file" style="display:none" accept="audio/*" onchange="handleAudio(event)">
+                <i class="ri-folder-music-line"></i> Pilih Audio
+            </label>
+
+            <audio id="a-player" controls style="display:none;"></audio>
+            <div id="a-info" class="status-text">Menunggu file audio...</div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    function handleVisual(e) {
+        const file = e.target.files[0];
+        const preview = document.getElementById('v-preview');
+        const status = document.getElementById('v-status');
+        
+        if (!file) return;
+
+        preview.innerHTML = "";
+        preview.style.display = "flex"; // Flex agar konten di tengah
+        const url = URL.createObjectURL(file);
+        
+        status.innerText = `Memuat: ${file.name}`;
+        status.style.color = "#333";
+        status.style.fontStyle = "normal";
+
+        if (file.type.startsWith('image/')) {
+            const img = document.createElement('img');
+            img.src = url;
+            img.alt = "Preview Gambar";
+            preview.appendChild(img);
+        } else {
+            const vid = document.createElement('video');
+            vid.src = url;
+            vid.controls = true;
+            preview.appendChild(vid);
+        }
+    }
+
+    function handleAudio(e) {
+        const file = e.target.files[0];
+        const player = document.getElementById('a-player');
+        const info = document.getElementById('a-info');
+        
+        if (!file) return;
+
+        player.src = URL.createObjectURL(file);
+        player.style.display = "block"; // Tampilkan player native
+        player.play();
+        
+        info.innerText = `Sedang memutar: ${file.name}`;
+        info.style.color = "#333";
+        info.style.fontStyle = "normal";
+    }
+</script>
+
+</body>
+</html>
